@@ -1,0 +1,435 @@
+-- Carregar a Orion Library
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xtentacion178/Orionl/refs/heads/main/Djebsjs"))()
+
+-- Criar a Janela da Interface
+local Window = OrionLib:MakeWindow({
+    Name = "🌐Imperio cachorro🌐",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "BAB_AutoFarm_Config"
+})
+
+-- Criar a Aba de AutoFarm
+local Tab = Window:MakeTab({
+    Name = "AutoFarm",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+
+-- VariÃ¡vel para controlar o estado do AutoFarm
+local isAutoFarmEnabled = false
+
+-- FunÃ§Ã£o Principal do AutoFarm
+local function autoFarmStart()
+    local tweenService = game:GetService("TweenService")
+    local player = game.Players.LocalPlayer
+    local hrp = player.Character:WaitForChild("HumanoidRootPart")
+
+    -- ConfiguraÃ§Ãµes de Tween
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear)
+    local tweenInfoE = TweenInfo.new(2, Enum.EasingStyle.Linear)
+    local autoFarmInfoS = TweenInfo.new(24, Enum.EasingStyle.Linear)
+
+    -- Primeiro Movimento
+    local tween1 = tweenService:Create(hrp, tweenInfo, {
+        CFrame = CFrame.new(-53.32, 61.08, -168.99)
+    })
+    tween1:Play()
+    tween1.Completed:Wait()
+
+    -- Segundo Movimento
+    local tween2 = tweenService:Create(hrp, autoFarmInfoS, {
+        CFrame = CFrame.new(-60.16, 45.51, 8749.81)
+    })
+    tween2:Play()
+    tween2.Completed:Wait()
+
+    -- Terceiro Movimento
+    local tween3 = tweenService:Create(hrp, tweenInfoE, {
+        CFrame = CFrame.new(-54.73, -353.34, 9499.69)
+    })
+    tween3:Play()
+
+    wait(2)
+    hrp.Anchored = true
+
+    -- Loop para coletar o baÃº de ouro
+    spawn(function()
+        while isAutoFarmEnabled and player.Character do
+            firetouchinterest(hrp, workspace.BoatStages.NormalStages.TheEnd.GoldenChest.Trigger, 0)
+            wait(0.1)
+            firetouchinterest(hrp, workspace.BoatStages.NormalStages.TheEnd.GoldenChest.Trigger, 1)
+            wait(0.5)
+        end
+    end)
+end
+
+-- Toggle para ativar/desativar o AutoFarm
+Tab:AddToggle({
+    Name = "Ativar AutoFarm de Ouro",
+    Default = false,
+    Callback = function(state)
+        isAutoFarmEnabled = state
+        if state then
+            print("AutoFarm Ativado!")
+            autoFarmStart()
+        else
+            print("AutoFarm Desativado!")
+        end
+    end
+})
+
+-- Reativar AutoFarm apÃ³s renascer
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    if isAutoFarmEnabled then
+        wait(1) -- Garantir que o personagem foi carregado
+        autoFarmStart()
+    end
+end)
+
+-- VariÃ¡vel de controle do AutoFarm
+local isAutoFarmEnabled = false
+
+-- FunÃ§Ã£o para fazer o Tween atÃ© o BaÃº Dourado
+local function tweenToGoldenChest(target)
+    local TweenService = game:GetService("TweenService")
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
+    local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    if humanoidRootPart then
+        humanoidRootPart.Anchored = true
+
+        local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+        local goal = {Position = target.Position}
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+
+        tween.Completed:Connect(function()
+            humanoidRootPart.Anchored = false
+        end)
+
+        tween:Play()
+    end
+end
+
+-- FunÃ§Ã£o principal do AutoFarm
+local function autoFarmLoop()
+    while isAutoFarmEnabled do
+        -- Tween para o primeiro estÃ¡gio (Cave Stage 1)
+        for _, part in ipairs(workspace.BoatStages.NormalStages.CaveStage1:GetDescendants()) do
+            if not isAutoFarmEnabled then return end  -- Verifica se o AutoFarm ainda estÃ¡ ativo
+            if part:IsA("BasePart") and part.Name == "DarknessPart" then
+                tweenToGoldenChest(part)
+                break
+            end
+        end
+        task.wait(3.4)
+
+        -- Tween para o BaÃº Dourado (The End)
+        for _, part in ipairs(workspace.BoatStages.NormalStages.TheEnd.GoldenChest:GetDescendants()) do
+            if not isAutoFarmEnabled then return end  -- Verifica se o AutoFarm ainda estÃ¡ ativo
+            if part:IsA("BasePart") and part.Name == "Trigger" then
+                tweenToGoldenChest(part)
+                break
+            end
+        end
+        task.wait(3.7)
+    end
+end
+
+-- Toggle para ativar/desativar o AutoFarm
+Tab:AddToggle({
+    Name = "Ativar AutoFarm de BaÃº Dourado",
+    Default = false,
+    Callback = function(state)
+        isAutoFarmEnabled = state
+        if state then
+            print("AutoFarm Ativado!")
+            autoFarmLoop()
+        else
+            print("AutoFarm Desativado!")
+        end
+    end
+})
+
+-- Reativar AutoFarm apÃ³s renascer
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    if isAutoFarmEnabled then
+        wait(1)
+        autoFarmLoop()
+    end
+end)
+
+-- Criar a Aba de CÃ³digos
+local Tab = Window:MakeTab({
+    Name = "Resgatar CÃ³digos",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+
+-- Lista de CÃ³digos
+local codes = {
+    "Free gifts", "1B", "voted code", "Lurking Code", "1M Likes",
+    "Big F00t Print", "The Sasquatch?", "Fireworks", "2M members", "Hatched code",
+    "TTTRRREEEAAASSSUUURRREEE", "BBBOOOAAATTTSSS!!!", "The Yeti", "Cold Feet",
+    "500M Visits", "Veterans Day", "hi", "Squid Army", "=P", "=D",
+    "chillthrill709 was here", "Happy Valentine's day", "Be a big f00t print",
+    "fuzzy friend?", "Lurking Legend", "GGGOOOAAALLL"
+}
+
+-- VariÃ¡vel para armazenar o cÃ³digo selecionado
+local selectedCode = nil
+
+-- Dropdown para SeleÃ§Ã£o de CÃ³digo
+Tab:AddDropdown({
+    Name = "Selecione um CÃ³digo",
+    Default = codes[1],
+    Options = codes,
+    Callback = function(value)
+        selectedCode = value
+        print("CÃ³digo selecionado:", value)
+    end
+})
+
+-- FunÃ§Ã£o para resgatar o cÃ³digo
+local function redeemCode(code)
+    -- Simula o resgate do cÃ³digo (modifique conforme necessÃ¡rio para o jogo)
+    game:GetService("ReplicatedStorage"):WaitForChild("ClaimCode"):FireServer(code)
+    print("CÃ³digo resgatado:", code)
+end
+
+-- BotÃ£o para Resgatar o CÃ³digo
+Tab:AddButton({
+    Name = "Resgatar CÃ³digo",
+    Callback = function()
+        if selectedCode then
+            redeemCode(selectedCode)
+        else
+            print("Por favor, selecione um cÃ³digo antes de resgatar.")
+        end
+    end
+})
+
+
+-- Inicializar a interface
+OrionLib:Init()-- Carregar a Orion Library
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xtentacion178/Orionl/refs/heads/main/Djebsjs"))()
+
+-- Criar a Janela da Interface
+local Window = OrionLib:MakeWindow({
+    Name = "🌐Imperio cachorro🌐",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "BAB_AutoFarm_Config"
+})
+
+-- Criar a Aba de AutoFarm
+local Tab = Window:MakeTab({
+    Name = "AutoFarm",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+
+-- VariÃ¡vel para controlar o estado do AutoFarm
+local isAutoFarmEnabled = false
+
+-- FunÃ§Ã£o Principal do AutoFarm
+local function autoFarmStart()
+    local tweenService = game:GetService("TweenService")
+    local player = game.Players.LocalPlayer
+    local hrp = player.Character:WaitForChild("HumanoidRootPart")
+
+    -- ConfiguraÃ§Ãµes de Tween
+    local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear)
+    local tweenInfoE = TweenInfo.new(2, Enum.EasingStyle.Linear)
+    local autoFarmInfoS = TweenInfo.new(24, Enum.EasingStyle.Linear)
+
+    -- Primeiro Movimento
+    local tween1 = tweenService:Create(hrp, tweenInfo, {
+        CFrame = CFrame.new(-53.32, 61.08, -168.99)
+    })
+    tween1:Play()
+    tween1.Completed:Wait()
+
+    -- Segundo Movimento
+    local tween2 = tweenService:Create(hrp, autoFarmInfoS, {
+        CFrame = CFrame.new(-60.16, 45.51, 8749.81)
+    })
+    tween2:Play()
+    tween2.Completed:Wait()
+
+    -- Terceiro Movimento
+    local tween3 = tweenService:Create(hrp, tweenInfoE, {
+        CFrame = CFrame.new(-54.73, -353.34, 9499.69)
+    })
+    tween3:Play()
+
+    wait(2)
+    hrp.Anchored = true
+
+    -- Loop para coletar o baÃº de ouro
+    spawn(function()
+        while isAutoFarmEnabled and player.Character do
+            firetouchinterest(hrp, workspace.BoatStages.NormalStages.TheEnd.GoldenChest.Trigger, 0)
+            wait(0.1)
+            firetouchinterest(hrp, workspace.BoatStages.NormalStages.TheEnd.GoldenChest.Trigger, 1)
+            wait(0.5)
+        end
+    end)
+end
+
+-- Toggle para ativar/desativar o AutoFarm
+Tab:AddToggle({
+    Name = "Ativar AutoFarm de Ouro",
+    Default = false,
+    Callback = function(state)
+        isAutoFarmEnabled = state
+        if state then
+            print("AutoFarm Ativado!")
+            autoFarmStart()
+        else
+            print("AutoFarm Desativado!")
+        end
+    end
+})
+
+-- Reativar AutoFarm apÃ³s renascer
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    if isAutoFarmEnabled then
+        wait(1) -- Garantir que o personagem foi carregado
+        autoFarmStart()
+    end
+end)
+
+-- VariÃ¡vel de controle do AutoFarm
+local isAutoFarmEnabled = false
+
+-- FunÃ§Ã£o para fazer o Tween atÃ© o BaÃº Dourado
+local function tweenToGoldenChest(target)
+    local TweenService = game:GetService("TweenService")
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
+    local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    if humanoidRootPart then
+        humanoidRootPart.Anchored = true
+
+        local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+        local goal = {Position = target.Position}
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+
+        tween.Completed:Connect(function()
+            humanoidRootPart.Anchored = false
+        end)
+
+        tween:Play()
+    end
+end
+
+-- FunÃ§Ã£o principal do AutoFarm
+local function autoFarmLoop()
+    while isAutoFarmEnabled do
+        -- Tween para o primeiro estÃ¡gio (Cave Stage 1)
+        for _, part in ipairs(workspace.BoatStages.NormalStages.CaveStage1:GetDescendants()) do
+            if not isAutoFarmEnabled then return end  -- Verifica se o AutoFarm ainda estÃ¡ ativo
+            if part:IsA("BasePart") and part.Name == "DarknessPart" then
+                tweenToGoldenChest(part)
+                break
+            end
+        end
+        task.wait(3.4)
+
+        -- Tween para o BaÃº Dourado (The End)
+        for _, part in ipairs(workspace.BoatStages.NormalStages.TheEnd.GoldenChest:GetDescendants()) do
+            if not isAutoFarmEnabled then return end  -- Verifica se o AutoFarm ainda estÃ¡ ativo
+            if part:IsA("BasePart") and part.Name == "Trigger" then
+                tweenToGoldenChest(part)
+                break
+            end
+        end
+        task.wait(3.7)
+    end
+end
+
+-- Toggle para ativar/desativar o AutoFarm
+Tab:AddToggle({
+    Name = "Ativar AutoFarm de BaÃº Dourado",
+    Default = false,
+    Callback = function(state)
+        isAutoFarmEnabled = state
+        if state then
+            print("AutoFarm Ativado!")
+            autoFarmLoop()
+        else
+            print("AutoFarm Desativado!")
+        end
+    end
+})
+
+-- Reativar AutoFarm apÃ³s renascer
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    if isAutoFarmEnabled then
+        wait(1)
+        autoFarmLoop()
+    end
+end)
+
+-- Criar a Aba de CÃ³digos
+local Tab = Window:MakeTab({
+    Name = "Resgatar CÃ³digos",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+
+-- Lista de CÃ³digos
+local codes = {
+    "Free gifts", "1B", "voted code", "Lurking Code", "1M Likes",
+    "Big F00t Print", "The Sasquatch?", "Fireworks", "2M members", "Hatched code",
+    "TTTRRREEEAAASSSUUURRREEE", "BBBOOOAAATTTSSS!!!", "The Yeti", "Cold Feet",
+    "500M Visits", "Veterans Day", "hi", "Squid Army", "=P", "=D",
+    "chillthrill709 was here", "Happy Valentine's day", "Be a big f00t print",
+    "fuzzy friend?", "Lurking Legend", "GGGOOOAAALLL"
+}
+
+-- VariÃ¡vel para armazenar o cÃ³digo selecionado
+local selectedCode = nil
+
+-- Dropdown para SeleÃ§Ã£o de CÃ³digo
+Tab:AddDropdown({
+    Name = "Selecione um CÃ³digo",
+    Default = codes[1],
+    Options = codes,
+    Callback = function(value)
+        selectedCode = value
+        print("CÃ³digo selecionado:", value)
+    end
+})
+
+-- FunÃ§Ã£o para resgatar o cÃ³digo
+local function redeemCode(code)
+    -- Simula o resgate do cÃ³digo (modifique conforme necessÃ¡rio para o jogo)
+    game:GetService("ReplicatedStorage"):WaitForChild("ClaimCode"):FireServer(code)
+    print("CÃ³digo resgatado:", code)
+end
+
+-- BotÃ£o para Resgatar o CÃ³digo
+Tab:AddButton({
+    Name = "Resgatar CÃ³digo",
+    Callback = function()
+        if selectedCode then
+            redeemCode(selectedCode)
+        else
+            print("Por favor, selecione um cÃ³digo antes de resgatar.")
+        end
+    end
+})
+
+
+-- Inicializar a interface
+OrionLib:Init()
